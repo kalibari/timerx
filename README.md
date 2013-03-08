@@ -14,7 +14,8 @@ Requirements
 Installation
 ======
 git clone https://github.com/kalibari/timerx.git
-
+cd timerx
+./timerx.pl
 
 Description
 ======
