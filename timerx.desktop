@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=TimerX
+Comment=TimerX, Alarm Timer, Shutdown Timer
+Exec=/opt/timerx/timerx.pl
+Icon=/opt/timerx/timerx.png
+Terminal=false
+Type=Application
+StartupNotify=true
+Categories=Settings;GNOME;GTK;
+
