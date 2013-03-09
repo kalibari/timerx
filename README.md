@@ -29,3 +29,4 @@ Keep in mind, that the shutdown will execute immediatly without user confirmatio
 
 Tested on:
 - Fedora 18
+- Ubuntu 12.10
