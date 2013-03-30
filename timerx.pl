@@ -5,9 +5,10 @@ use strict;
 use POSIX;
 use Gtk3 '-init';
 use XML::Simple qw(:strict);
+use Glib qw/TRUE FALSE/;
 
 my $prognam="timerx";
-my $version='0.31';
+my $version='0.32';
 my $replace_config=0;
 my $home=$ENV{"HOME"};
 
@@ -32,7 +33,6 @@ my @child_pids;
 my $mainpid=getpid();
 print "mainpid: $mainpid\n";
 
-
 my $localtime_in_seconds=0;
 my $endtime_in_seconds=0;
 my $duration_in_seconds=0;
@@ -41,6 +41,8 @@ my $entrytime_in_seconds=0;
 my $fraction_loop1=0;
 my $fraction_loop2=0;
 my $fraction_steps=0;
+
+my $enable_glib_timeout=0;
 
 local $SIG{CHLD} ='IGNORE';
 local $SIG{ALRM} = \&alarm_start;
@@ -182,12 +184,7 @@ my $vbox2 = Gtk3::Box->new("vertical", $spacing8);
 $vbox2->pack_start($hbox4, 0,0,0);
 $vbox2->pack_start($entry_command, 0,0,0);
 
-# Label time to event
-my $label_time_to_event = Gtk3::Label->new("");
 
-# Horizontale Box 1
-my $hbox1 = Gtk3::Box->new("horizontal", 5);
-$hbox1->pack_start($label_time_to_event, 0,0,0);
 
 # Progress Bar 1
 my $progress1 = Gtk3::ProgressBar->new;
@@ -203,7 +200,6 @@ my $sep2 = Gtk3::Separator->new("horizontal");
 
 # Vertical Box 3
 my $vbox3 = Gtk3::Box->new("vertical", $spacing8);
-$vbox3->pack_start($hbox1, 0,0,0);
 $vbox3->pack_start($sep1, 0,0,0);
 $vbox3->pack_start($progress1, 0,0,0);
 $vbox3->pack_start($sep2, 0,0,0);
@@ -231,6 +227,7 @@ $window1->show_all();
 
 entry_time_changed();
 set_gui_start();
+
 
 Gtk3->main();
 
@@ -429,6 +426,7 @@ sub entry_time_changed {
 sub set_time_to_event{
 	print "sub set_time_to_event start\n";
 
+	refresh_duration_in_seconds();
 	my $calc_time=$duration_in_seconds;
 
 	my $hour=$calc_time/60/60;
@@ -453,8 +451,11 @@ sub set_time_to_event{
 		$sec="0$sec";
 	}
 
-	$label_time_to_event->set_text("$hour:$min:$sec");
-	return;
+	if ($enable_glib_timeout == 1){
+		$progress1->set_text("$hour:$min:$sec");
+	}
+
+	return $enable_glib_timeout;
 }
 
 
@@ -625,6 +626,14 @@ sub set_gui_busy  {
 	$stopbutton->set_sensitive(1);
 	$progress1->set_fraction(1);
 	$entry_time->set_editable(0);
+
+	###
+	$enable_glib_timeout=0;
+	$progress1->set_text("");
+	#$progress1->set_show_text(FALSE);
+
+	###
+
 	print "sub set_gui_busy start\n";
 	return;
 }
@@ -648,9 +657,13 @@ sub set_gui_start {
 	$time_spin->set_sensitive(1);
 	$combobox1->set_sensitive(1);
 	$stopbutton->set_sensitive(0);
-	$progress1->set_fraction(0);
 	$entry_time->set_editable(1);
-#	$time_spin->set_value(0);
+
+	$enable_glib_timeout=1;
+	Glib::Timeout->add (1000, \&set_time_to_event, undef, 0);
+	$progress1->set_fraction(0);
+	$progress1->set_show_text(TRUE);
+
 	$entry_command->set_text($run_program);
 	set_entry_command_box();
 	print "sub set_gui_start bye\n";
@@ -662,6 +675,7 @@ sub stop_button {
 	print "sub stop_button start\n";
 	killall_childs();
 	set_gui_start();
+	set_time_to_event();
 	print "sub stop_button bye\n";
 	return;
 }

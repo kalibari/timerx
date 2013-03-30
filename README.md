@@ -1,6 +1,11 @@
-TimerX V0.31
+TimerX
 ======
-TimerX is a simple countdown / shutdown timer written in Perl. The graphical user interface uses Gtk3. TimerX is a free software under the GPL license. 
+TimerX is a simple countdown / shutdown timer written in Perl. The graphical user interface uses Gtk3. TimerX is a free software under the GPL license.
+
+
+Version
+======
+Current Version is 0.32
 
 
 Requirements
