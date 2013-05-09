@@ -5,7 +5,7 @@ TimerX is a simple countdown / shutdown timer written in Perl. The graphical use
 
 Version
 ======
-Current Version is 0.32
+Current Version is 0.33
 
 
 Requirements

@@ -7,6 +7,16 @@ use Gtk3 '-init';
 use XML::Simple qw(:strict);
 use Glib qw/TRUE FALSE/;
 
+my $debug=0;
+
+if ($ARGV[0]){
+	if ("$ARGV[0]" =~"debug"){
+		print "sub argv: debug mode\n";
+		$debug=1;
+	}
+}
+
+
 my $prognam="timerx";
 my $version='0.32';
 my $replace_config=0;
@@ -27,11 +37,11 @@ my $sound_file;
 get_system_shutdown_cmd();
 read_xml_file();
 
-print "start $prognam\n";
+if ($debug==1){print "start $prognam\n";}
 my @child_pids;
 
 my $mainpid=getpid();
-print "mainpid: $mainpid\n";
+if ($debug==1){print "mainpid: $mainpid\n";}
 
 my $localtime_in_seconds=0;
 my $endtime_in_seconds=0;
@@ -185,7 +195,6 @@ $vbox2->pack_start($hbox4, 0,0,0);
 $vbox2->pack_start($entry_command, 0,0,0);
 
 
-
 # Progress Bar 1
 my $progress1 = Gtk3::ProgressBar->new;
 $progress1->set_orientation("horizontal");
@@ -233,40 +242,40 @@ Gtk3->main();
 
 
 sub event {
-    print "sub event start\n";
+	if ($debug==1){print "sub event start\n";}
 
 	my $pid=getpid();
-    print "sub event mainpid: $mainpid pid: $pid\n";
+	if ($debug==1){print "sub event mainpid: $mainpid pid: $pid\n";}
 
 	killall_childs();
 
-    print "sub event todo: $event_value\n";
+	if ($debug==1){print "sub event todo: $event_value\n";}
 
 	if ($event_value=~"alarm"){
-		print "sub event sound_file: $directory_bin/$sound_file\n";
+		if ($debug==1){print "sub event sound_file: $directory_bin/$sound_file\n";}
 		system("aplay --start-delay=400 $directory_bin/$sound_file &");
 	}
 	elsif ($event_value=~"shutdown"){
-		print "sub event poweroff_cmd: $poweroff_cmd\n";
+		if ($debug==1){print "sub event poweroff_cmd: $poweroff_cmd\n";}
 		system("$poweroff_cmd &");
 	}
 	elsif ($event_value=~"run_command"){
-		print "sub event run_command: $run_program\n";
+		if ($debug==1){print "sub event run_command: $run_program\n";}
 		system("$run_program &");
 	}
 
 	time_spin_box();
 	set_gui_start();
-    print "sub event bye\n";
+	if ($debug==1){print "sub event end\n";}
 	return;
 }
 
 
 sub set_progress{
-    print "sub set_progress start\n";
+	if ($debug==1){print "sub set_progress start\n";}
 
 	my $pid=getpid();
-    print "sub set_progress mainpid: $mainpid pid: $pid\n";
+	if ($debug==1){print "sub set_progress mainpid: $mainpid pid: $pid\n";}
 
 	my $old_fraction;
 	my $new_fraction;
@@ -274,46 +283,46 @@ sub set_progress{
 	if ($fraction_loop1>0){
 		# 10s
 		$fraction_loop1=$fraction_loop1-1;
-		print "sub set_progress fraction_loop1: $fraction_loop1\n";
+		if ($debug==1){print "sub set_progress fraction_loop1: $fraction_loop1\n";}
 		$old_fraction=$progress1->get_fraction;
 		$new_fraction=$old_fraction-($fraction_steps*10);
 	}
 	elsif ($fraction_loop2>0){
 		# 1s
 		$fraction_loop2=$fraction_loop2-1;
-		print "sub set_progress fraction_loop2: $fraction_loop2\n";
+		if ($debug==1){print "sub set_progress fraction_loop2: $fraction_loop2\n";}
 		$old_fraction=$progress1->get_fraction;
 		$new_fraction=$old_fraction-($fraction_steps);
 	}
 
 
 	if ($new_fraction<0.00000001){
-		print "sub set_progress set new_fraction 0\n";
+		if ($debug==1){print "sub set_progress set new_fraction 0\n";}
 		$new_fraction=0;
 	}
 	elsif ($new_fraction>1){
-		print "sub set_progress set new_fraction 1\n";
+		if ($debug==1){print "sub set_progress set new_fraction 1\n";}
 		$new_fraction=1;
 	}
 
-	print "sub set_progress new_fraction: $new_fraction\n";
+	if ($debug==1){print "sub set_progress new_fraction: $new_fraction\n";}
 	$progress1->set_fraction($new_fraction);
 
-    print "sub set_progress bye\n";
+	if ($debug==1){print "sub set_progress end\n";}
 	return;
 }
 
 
 sub alarm_start {
-    print "sub alarm_start start\n";
+	if ($debug==1){print "sub alarm_start start\n";}
 	# send SIGUSR2 because this is a child
 	system("kill -SIGUSR2 $mainpid");
-    print "sub alarm_start bye\n";
+	if ($debug==1){print "sub alarm_start end\n";}
 }
 
 
 sub get_system_shutdown_cmd{
-    print "sub get_system_shutdown_cmd start\n";
+	if ($debug==1){print "sub get_system_shutdown_cmd start\n";}
 
 	# Fedora release 15 (Lovelock)
 	# Fedora release 15 (Lovelock)
@@ -394,37 +403,37 @@ sub get_system_shutdown_cmd{
 		$poweroff_cmd='sudo shutdown -h now';
 	}
 
-    print "sub get_system_shutdown_cmd bye\n";
+	if ($debug==1){print "sub get_system_shutdown_cmd end\n";}
 	return;
 }
 
 
 sub refresh_localtime_in_seconds{
-	print "sub refresh_localtime_in_seconds start\n";
+	if ($debug==1){print "sub refresh_localtime_in_seconds start\n";}
 
 	my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
 	$localtime_in_seconds=($hour*60*60)+($min*60)+$sec;
-	print "sub refresh_localtime_in_seconds localtime_in_seconds: $localtime_in_seconds\n";
+	if ($debug==1){print "sub refresh_localtime_in_seconds localtime_in_seconds: $localtime_in_seconds\n";}
 
-	print "sub refresh_localtime_in_seconds end\n";
+	if ($debug==1){print "sub refresh_localtime_in_seconds end\n";}
 	return;
 }
 
 
 sub entry_time_changed {
-	print "sub entry_time_changed start\n";
+	if ($debug==1){print "sub entry_time_changed start\n";}
 	my $erg=read_entry_time_box();
 	if ($erg){
 		refresh_duration_in_seconds();
 		set_time_to_event();
 	}
-	print "sub entry_time_changed bye\n";
+	if ($debug==1){print "sub entry_time_changed end\n";}
 	return;
 }
 
 
 sub set_time_to_event{
-	print "sub set_time_to_event start\n";
+	if ($debug==1){print "sub set_time_to_event start\n";}
 
 	refresh_duration_in_seconds();
 	my $calc_time=$duration_in_seconds;
@@ -460,27 +469,27 @@ sub set_time_to_event{
 
 
 sub refresh_duration_in_seconds{
-	print "sub refresh_duration_in_seconds start\n";
+	if ($debug==1){print "sub refresh_duration_in_seconds start\n";}
 
 	refresh_localtime_in_seconds();
 
 	if ($endtime_in_seconds<$localtime_in_seconds){
 		$endtime_in_seconds=1440*60+$endtime_in_seconds;
 	}
-	print "sub refresh_duration_in_seconds endtime_in_seconds: $endtime_in_seconds\n";
+	if ($debug==1){print "sub refresh_duration_in_seconds endtime_in_seconds: $endtime_in_seconds\n";}
 
 	$duration_in_seconds=$endtime_in_seconds-$localtime_in_seconds;
-	print "sub refresh_duration_in_seconds duration_in_seconds: $duration_in_seconds\n";
+	if ($debug==1){print "sub refresh_duration_in_seconds duration_in_seconds: $duration_in_seconds\n";}
 
-	print "sub refresh_duration_in_seconds bye\n";
+	if ($debug==1){print "sub refresh_duration_in_seconds end\n";}
 	return;
 }
 
 
 sub refresh_entry_time {
-	print "sub refresh_entry_time start\n";
+	if ($debug==1){print "sub refresh_entry_time start\n";}
 
-	print "sub refresh_entry_time entrytime_in_seconds: $entrytime_in_seconds\n";
+	if ($debug==1){print "sub refresh_entry_time entrytime_in_seconds: $entrytime_in_seconds\n";}
 
 	my $hour=int($entrytime_in_seconds/60/60);
 	my $sec=$entrytime_in_seconds-($hour*60*60);
@@ -496,48 +505,46 @@ sub refresh_entry_time {
 		$min="0$min";
 	}
 
-	print "sub refresh_entry_time hour:$hour min $min\n";
+	if ($debug==1){print "sub refresh_entry_time hour:$hour min $min\n";}
 
 	if ($entry_time){
 		$entry_time->set_text("$hour:$min");
 		$time_spin_box_value="$hour:$min";
 	}
-	print "sub refresh_entry_time bye\n";
+	if ($debug==1){print "sub refresh_entry_time end\n";}
 	return;
 }
 
 
 sub read_entry_time_box {
-	print "sub read_entry_time_box start\n";
+	if ($debug==1){print "sub read_entry_time_box start\n";}
 
 	my $e_time = $entry_time->get_text();
+	if ($debug==1){print "sub read_entry_time_box e_time: $e_time\n";}
+
 
 	my @time=split(/:/,$e_time);
 
 	my $hour=$time[0];
 	my $min=$time[1];
 
-	if ((!$hour) or (!$min)){
-		return 0;
-	}
-	elsif ((($hour>=0) and ($hour<24)) and (($min>=0) and ($min<60))){
+	if ((($hour>=0) and ($hour<24)) and (($min>=0) and ($min<60))){
 		$endtime_in_seconds=($hour*60*60)+($min*60);
+		if ($debug==1){print "sub read_entry_time_box return 1 end\n";}
 		return 1;
 	}
 	else{
+		if ($debug==1){print "sub read_entry_time_box return 0 end\n";}
 		return 0;
 	}
-	print "sub read_entry_time_box endtime_in_seconds: $endtime_in_seconds\n";
 
-	print "sub read_entry_time_box bye\n";
-	return;
 }
 
 
 sub set_entry_command_box{
-	print "sub set_entry_command_box start\n";
+	if ($debug==1){print "sub set_entry_command_box start\n";}
 
-	print "sub set_entry_command_box todo_value: $event_value\n";
+	if ($debug==1){print "sub set_entry_command_box todo_value: $event_value\n";}
 
 	if ($event_value=~"run_command"){
 		$entry_command->set_sensitive(1);
@@ -548,21 +555,21 @@ sub set_entry_command_box{
 	elsif ($event_value=~"shutdown"){
 		$entry_command->set_sensitive(0);
 	}
-	print "sub set_entry_command_box bye\n";
+	if ($debug==1){print "sub set_entry_command_box end\n";}
 	return;
 }
 
 
 sub time_spin_box {
-	print "sub time_spin_box start\n";
+	if ($debug==1){print "sub time_spin_box start\n";}
 
 	refresh_localtime_in_seconds();
 
 	my $add_seconds=($time_spin->get_value())*60;
-	print "sub time_spin_box add_seconds: $add_seconds\n";
+	if ($debug==1){print "sub time_spin_box add_seconds: $add_seconds\n";}
 
 	$entrytime_in_seconds=$localtime_in_seconds+$add_seconds;
-	print "sub time_spin_box entrytime_in_seconds: $entrytime_in_seconds\n";
+	if ($debug==1){print "sub time_spin_box entrytime_in_seconds: $entrytime_in_seconds\n";}
 
 	refresh_entry_time();
 	read_entry_time_box();		# ->endtime_in_s
@@ -570,7 +577,7 @@ sub time_spin_box {
 	refresh_duration_in_seconds();
 	set_time_to_event();
 
-	print "sub time_spin_box bye\n";
+	if ($debug==1){print "sub time_spin_box end\n";}
 	return;
 }
 
@@ -578,15 +585,15 @@ sub time_spin_box {
 sub cb_changed {
 	my ($widget, $cb) = @_;
 
-	print "sub cb_changed start\n";
-	print "sub cb_changed cb: $cb\n";
+	if ($debug==1){print "sub cb_changed start\n";}
+	if ($debug==1){print "sub cb_changed cb: $cb\n";}
 
 	$event_value = $combobox1->get_active_text();
-	print "sub cb_changed todo: $event_value\n";
+	if ($debug==1){print "sub cb_changed todo: $event_value\n";}
 
 	set_entry_command_box();
 
-	print "sub cb_changed bye\n";
+	if ($debug==1){print "sub cb_changed end\n";}
 	return;
 }
 
@@ -594,19 +601,19 @@ sub cb_changed {
 sub rb_toggled {
 	my ($widget, $rb) = @_;
 
-	print "sub rb_toggled start\n";
-	print "rb: $rb\n";
+	if ($debug==1){print "sub rb_toggled start\n";}
+	if ($debug==1){print "rb: $rb\n";}
 
 	$time_spin->set_value($rb);
 	$time_spin->update;
 
-	print "sub rb_toggled bye\n";
+	if ($debug==1){print "sub rb_toggled end\n";}
 	return;
 }
 
 
 sub set_gui_busy  {
-	print "sub set_gui_busy start\n";
+	if ($debug==1){print "sub set_gui_busy start\n";}
 	$startbutton->set_sensitive(0);
 	$sleep_box_15->set_sensitive(0);
 	$sleep_box_30->set_sensitive(0);
@@ -626,21 +633,15 @@ sub set_gui_busy  {
 	$stopbutton->set_sensitive(1);
 	$progress1->set_fraction(1);
 	$entry_time->set_editable(0);
-
-	###
 	$enable_glib_timeout=0;
 	$progress1->set_text("");
-	#$progress1->set_show_text(FALSE);
-
-	###
-
-	print "sub set_gui_busy start\n";
+	if ($debug==1){print "sub set_gui_busy start\n";}
 	return;
 }
 
 
 sub set_gui_start {
-	print "sub set_gui_start start\n";
+	if ($debug==1){print "sub set_gui_start start\n";}
 	$startbutton->set_sensitive(1);
 	$sleep_box_15->set_sensitive(1);
 	$sleep_box_30->set_sensitive(1);
@@ -666,26 +667,26 @@ sub set_gui_start {
 
 	$entry_command->set_text($run_program);
 	set_entry_command_box();
-	print "sub set_gui_start bye\n";
+	if ($debug==1){print "sub set_gui_start end\n";}
 	return;
 }
 
 
 sub stop_button {
-	print "sub stop_button start\n";
+	if ($debug==1){print "sub stop_button start\n";}
 	killall_childs();
 	set_gui_start();
 	set_time_to_event();
-	print "sub stop_button bye\n";
+	if ($debug==1){print "sub stop_button end\n";}
 	return;
 }
 
 
 sub read_xml_file {
-	print "sub read_xml_file start\n";
+	if ($debug==1){print "sub read_xml_file start\n";}
 
 	if (!(-d $directory_config)){
-		print "sub read_xml_file create directory directory_config: $directory_config\n";
+		if ($debug==1){print "sub read_xml_file create directory directory_config: $directory_config\n";}
 		system("mkdir -p $directory_config");
 	}
 
@@ -713,7 +714,7 @@ sub read_xml_file {
 
 	my $compare_a=int($version * 10) /10;
 	my $compare_b=int($config_version * 10) /10;
-	print "sub read_xml_file compare_a: $compare_a compare_b: $compare_b\n";
+	if ($debug==1){print "sub read_xml_file compare_a: $compare_a compare_b: $compare_b\n";}
 
 
 	if ((!$config_version) or ($compare_a>$compare_b) or ($replace_config==1)){
@@ -727,25 +728,25 @@ sub read_xml_file {
 
 
 	$directory_bin=$xml->{set}->{directory}->{bin}->[0];
-	print "sub read_xml_file directory_bin: $directory_bin\n";
+	if ($debug==1){print "sub read_xml_file directory_bin: $directory_bin\n";}
 
 	$poweroff_cmd=$xml->{set}->{poweroff}->{cmd}->[0];
-	print "sub read_xml_file poweroff_cmd: $poweroff_cmd\n";
+	if ($debug==1){print "sub read_xml_file poweroff_cmd: $poweroff_cmd\n";}
 
 	$icon_file=$xml->{set}->{icon}->{file}->[0];
-	print "sub read_xml_file icon_file: $icon_file\n";
+	if ($debug==1){print "sub read_xml_file icon_file: $icon_file\n";}
 
 	$sound_file=$xml->{set}->{sound}->{file}->[0];
-	print "sub read_xml_file sound_file: $sound_file\n";
+	if ($debug==1){print "sub read_xml_file sound_file: $sound_file\n";}
 
 	$time_spin_box_value=$xml->{set}->{time_spin_box}->{value}->[0];
-	print "sub read_xml_file set_time_spin_box: $time_spin_box_value\n";
+	if ($debug==1){print "sub read_xml_file set_time_spin_box: $time_spin_box_value\n";}
 
 	$event_value=$xml->{set}->{todo}->{value}->[0];
-	print "sub read_xml_file todo: $event_value\n";
+	if ($debug==1){print "sub read_xml_file todo: $event_value\n";}
 
 	$run_program=$xml->{set}->{run}->{program}->[0];
-	print "sub read_xml_file run_program: $run_program\n";
+	if ($debug==1){print "sub read_xml_file run_program: $run_program\n";}
 
 	return;
 }
@@ -753,7 +754,7 @@ sub read_xml_file {
 
 sub create_xml_file{
 
-	print "sub create_xml_file start\n";
+	if ($debug==1){print "sub create_xml_file start\n";}
 
 	system("rm -I $directory_config/config");
 	system("touch $directory_config/config");
@@ -801,7 +802,7 @@ sub create_xml_file{
 
 
 sub write_xml_file{
-	print "sub write_xml_file start\n";
+	if ($debug==1){print "sub write_xml_file start\n";}
 
 	$xml->{set}->{config}->{version}->[0]=$config_version;
 	$xml->{set}->{directory}->{bin}->[0]=$directory_bin;
@@ -821,12 +822,14 @@ sub write_xml_file{
 	else{
 		die "Error sub write_xml_file cannot open file: $directory_config/config\n";
 	}
+
+	if ($debug==1){print "sub write_xml_file end\n";}
 	return;
 }
 
 
 sub start_button{
-	print "sub start_button start\n";
+	if ($debug==1){print "sub start_button start\n";}
 
 	$run_program=$entry_command->get_text();
 	my $erg=read_entry_time_box();
@@ -841,15 +844,15 @@ sub start_button{
 		if ($duration_in_seconds<20){
 			$fraction_loop1=0;
 			$fraction_loop2=$duration_in_seconds;
-			print "sub start_button fraction_loop1: $fraction_loop1\n";
-			print "sub start_button fraction_loop2: $fraction_loop2\n";
+			if ($debug==1){print "sub start_button fraction_loop1: $fraction_loop1\n";}
+			if ($debug==1){print "sub start_button fraction_loop2: $fraction_loop2\n";}
 		}
 		if ($duration_in_seconds>=20){
 			$fraction_loop2=($duration_in_seconds%10);
 			$fraction_loop2=$fraction_loop2+10;
 			$fraction_loop1=($duration_in_seconds-$fraction_loop2)/10;
-			print "sub start_button fraction_loop1: $fraction_loop1\n";
-			print "sub start_button fraction_loop2: $fraction_loop2\n";
+			if ($debug==1){print "sub start_button fraction_loop1: $fraction_loop1\n";}
+			if ($debug==1){print "sub start_button fraction_loop2: $fraction_loop2\n";}
 		}
 
 
@@ -858,7 +861,7 @@ sub start_button{
 		if ($duration_in_seconds>0){
 
 			$fraction_steps=1/$duration_in_seconds;
-			print "sub start_button fraction_steps: $fraction_steps\n";
+			if ($debug==1){print "sub start_button fraction_steps: $fraction_steps\n";}
 
 			my $kidpid = fork();
 			if ($kidpid!=0){
@@ -875,7 +878,7 @@ sub start_button{
 		}
 	}
 	else{
-		print "sub start_button erg: 0\n";
+		if ($debug==1){print "sub start_button erg: 0\n";}
 	}
 
 	return;
@@ -883,15 +886,15 @@ sub start_button{
 
 
 sub start_fork{
-	print "sub start_fork start\n";
+	if ($debug==1){print "sub start_fork start\n";}
 
 	alarm($duration_in_seconds);
-	print "sub start_fork duration_in_seconds: $duration_in_seconds\n";
+	if ($debug==1){print "sub start_fork duration_in_seconds: $duration_in_seconds\n";}
 
 
 	while ($fraction_loop1>0){
 		sleep 10;
-		print "sub start_fork fraction_loop1: $fraction_loop1\n";
+		if ($debug==1){print "sub start_fork fraction_loop1: $fraction_loop1\n";}
 		$fraction_loop1=$fraction_loop1-1;
 		system("kill -SIGUSR1 $mainpid");
 	}
@@ -899,11 +902,11 @@ sub start_fork{
 	while ($fraction_loop2>0){
 		sleep 1;
 		$fraction_loop2=$fraction_loop2-1;
-		print "sub start_fork fraction_loop2: $fraction_loop2\n";
+		if ($debug==1){print "sub start_fork fraction_loop2: $fraction_loop2\n";}
 		system("kill -SIGUSR1 $mainpid");
 	}
 
-	print "sub start_fork bye\n";
+	if ($debug==1){print "sub start_fork end\n";}
 	exit;
 }
 
@@ -913,7 +916,7 @@ sub killall_childs {
 	foreach my $child_pid (@child_pids){
 		my $exists = kill 0, $child_pid;
 		if ($exists){
-			print "Kill child process child_pid: $child_pid\n";
+			if ($debug==1){print "Kill child process child_pid: $child_pid\n";}
 			system("kill $child_pid");
 		}
 	}
@@ -921,10 +924,10 @@ sub killall_childs {
 
 
 sub quit {
-	print "sub quit\n";
+	if ($debug==1){print "sub quit\n";}
 	killall_childs();
 	Gtk3->main_quit();
-	print "sub quit: bye\n";
+	if ($debug==1){print "sub quit: bye\n";}
 	exit;
 }
 
