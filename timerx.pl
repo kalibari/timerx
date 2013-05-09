@@ -18,7 +18,7 @@ if ($ARGV[0]){
 
 
 my $prognam="timerx";
-my $version='0.32';
+my $version='0.33';
 my $replace_config=0;
 my $home=$ENV{"HOME"};
 
