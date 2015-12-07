@@ -5,7 +5,7 @@ TimerX is a simple countdown / shutdown timer written in Perl. The graphical use
 
 Version
 ======
-Current Version is 0.33
+Current Version is 0.40
 
 
 Requirements
@@ -18,7 +18,20 @@ Requirements
 
 Installation
 ======
+
+Install Dependencies
+Ubuntu + Debian:
+apt-get install perl alsa-utils libgtk3-perl libxml-simple-perl
+
+Fedora:
+yum install perl alsa-utils perl-Gtk3 perl-XML-Simple
+
+Install TimerX:
 git clone https://github.com/kalibari/timerx.git
+mv timerx /opt/
+chmod 0770 /opt/timerx/timerx.pl
+cp /opt/timerx/timerx.desktop /usr/share/applications/
+desktop-file-install /usr/share/applications/timerx.desktop
 
 
 Description
@@ -34,3 +47,4 @@ Keep in mind, that the shutdown will execute immediatly without user confirmatio
 Tested on:
 - Fedora 18
 - Ubuntu 12.10
+- Debian 8

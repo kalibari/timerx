@@ -18,7 +18,7 @@ if ($ARGV[0]){
 
 
 my $prognam="timerx";
-my $version='0.33';
+my $version='0.40';
 my $replace_config=0;
 my $home=$ENV{"HOME"};
 
@@ -375,25 +375,36 @@ sub get_system_shutdown_cmd{
 	# PRETTY_NAME="Ubuntu quantal (12.10)"
 	# VERSION_ID="12.10"
 
+	# PRETTY_NAME="Debian GNU/Linux 8 (jessie)"
+	# NAME="Debian GNU/Linux"
+	# VERSION_ID="8"
+	# VERSION="8 (jessie)"
+	# ID=debian
+	# HOME_URL="http://www.debian.org/"
+	# SUPPORT_URL="http://www.debian.org/support/"
+	# BUG_REPORT_URL="https://bugs.debian.org/"
+
+
 	my $distributor;
-	my $release;
 
 	my @check = `cat /etc/*-release`;
 
 	foreach my $check (@check){
-		if ($check=~/(.*) release (\d+)/){
-			$distributor = $1;
-			$release = $2;
-		}
 		if ($check=~/DISTRIB_ID=(.*)/){
 			$distributor = $1;
 		}
-		if  ($check=~/DISTRIB_RELEASE=(.*)/){
-			$release = $1;
+		if ($check=~/NAME=(.*)/){
+			$distributor = $1;
+		}
+		if ($check=~/(.*) release \d+/){
+			$distributor = $1;
 		}
 	}
 
 	if ($distributor=~/Fedora/){
+		$poweroff_cmd='systemctl poweroff';
+	}
+	elsif ($distributor=~/Debian/){
 		$poweroff_cmd='systemctl poweroff';
 	}
 	elsif ($distributor=~/Ubuntu/){
@@ -402,6 +413,8 @@ sub get_system_shutdown_cmd{
 	else{
 		$poweroff_cmd='sudo shutdown -h now';
 	}
+
+	if ($debug==1){print "sub get_system_shutdown_cmd poweroff_cmd: $poweroff_cmd\n";}
 
 	if ($debug==1){print "sub get_system_shutdown_cmd end\n";}
 	return;
