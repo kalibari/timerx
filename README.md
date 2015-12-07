@@ -19,19 +19,18 @@ Requirements
 Installation
 ======
 
-Install Dependencies
-Ubuntu + Debian:
-apt-get install perl alsa-utils libgtk3-perl libxml-simple-perl
+Install Dependencies (Ubuntu + Debian):<br />
+apt-get install perl alsa-utils libgtk3-perl libxml-simple-perl<br />
 
-Fedora:
-yum install perl alsa-utils perl-Gtk3 perl-XML-Simple
+Install Dependencies (Fedora):<br />
+yum install perl alsa-utils perl-Gtk3 perl-XML-Simple<br />
 
-Install TimerX:
-git clone https://github.com/kalibari/timerx.git
-mv timerx /opt/
-chmod 0770 /opt/timerx/timerx.pl
-cp /opt/timerx/timerx.desktop /usr/share/applications/
-desktop-file-install /usr/share/applications/timerx.desktop
+Install TimerX:<br />
+git clone https://github.com/kalibari/timerx.git<br />
+mv timerx /opt/<br />
+chmod 0770 /opt/timerx/timerx.pl<br />
+cp /opt/timerx/timerx.desktop /usr/share/applications/<br />
+desktop-file-install /usr/share/applications/timerx.desktop<br />
 
 
 Description
